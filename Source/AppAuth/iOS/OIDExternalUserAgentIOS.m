@@ -81,10 +81,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)presentExternalUserAgentRequest:(id<OIDExternalUserAgentRequest>)request
                                 session:(id<OIDExternalUserAgentSession>)session {
+
+  NSLog(@"JREMARI Entering presentExternalUserAgentRequest");
+  
   if (_externalUserAgentFlowInProgress) {
     // TODO: Handle errors as authorization is already in progress.
     return NO;
   }
+  
+  NSLog(@"JREMARI After _externalUserAgentFlowInProgress check");
 
   _externalUserAgentFlowInProgress = YES;
   _session = session;
@@ -93,6 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   // iOS 12 and later, use ASWebAuthenticationSession
   if (@available(iOS 12.0, *)) {
+    NSLog(@"JREMARI Enter iOS 12.0 available");
     // ASWebAuthenticationSession doesn't work with guided access (rdar://40809553)
     if (!UIAccessibilityIsGuidedAccessEnabled()) {
       __weak OIDExternalUserAgentIOS *weakSelf = self;
@@ -119,6 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
       }];
       authenticationVC.presentationContextProvider = self;
       if (@available(iOS 13.0, *)) {
+        NSLog(@"JREMARI Enter iOS 13.0 available");
         authenticationVC.prefersEphemeralWebBrowserSession = _prefersEphemeralSession;
       }
       _webAuthenticationVC = authenticationVC;
@@ -127,8 +134,10 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // iOS 11, use SFAuthenticationSession
   if (@available(iOS 11.0, *)) {
+    NSLog(@"JREMARI Enter iOS 11.0 available");
     // SFAuthenticationSession doesn't work with guided access (rdar://40809553)
     if (!openedUserAgent && !UIAccessibilityIsGuidedAccessEnabled()) {
+      NSLog(@"JREMARI Enter iOS 11.0 user agent not opened yet");
       __weak OIDExternalUserAgentIOS *weakSelf = self;
       NSString *redirectScheme = request.redirectScheme;
       SFAuthenticationSession *authenticationVC =
@@ -157,7 +166,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // iOS 9 and 10, use SFSafariViewController
   if (@available(iOS 9.0, *)) {
+    NSLog(@"JREMARI Enter iOS 9.0 available");
     if (!openedUserAgent && _presentingViewController) {
+      NSLog(@"JREMARI Enter iOS 9.0 user agent not opened yet");
       SFSafariViewController *safariVC =
           [[SFSafariViewController alloc] initWithURL:requestURL];
       safariVC.delegate = self;
@@ -168,6 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // iOS 8 and earlier, use mobile Safari
   if (!openedUserAgent){
+    NSLog(@"JREMARI Enter iOS 8.0 user agent not opened yet");
     openedUserAgent = [[UIApplication sharedApplication] openURL:requestURL];
   }
 
