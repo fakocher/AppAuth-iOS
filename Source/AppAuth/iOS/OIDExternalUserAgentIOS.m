@@ -110,6 +110,9 @@ NS_ASSUME_NONNULL_BEGIN
                                         completionHandler:^(NSURL * _Nullable callbackURL,
                                                             NSError * _Nullable error) {
         __strong OIDExternalUserAgentIOS *strongSelf = weakSelf;
+
+        NSLog( @"ASWebAuth Error: %@", error );
+        
         if (!strongSelf) {
             return;
         }
